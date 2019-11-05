@@ -17,10 +17,12 @@ class Game():
         self.scene = None
 
     def load_scene(self, scene_class):
-        new_scene = scene_class()
+        context = None
         if self.scene:
-            new_scene.context = self.scene.context
+            context = self.scene.context
             self.scene.unload()
+        new_scene = scene_class(context=context)
+        new_scene.load()
         self.scene = new_scene
 
     def on_draw(self):

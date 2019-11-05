@@ -2,9 +2,12 @@ from pyglet.graphics import Batch
 
 class Scene():
 
-    def __init__(self):
+    def __init__(self, context=None):
         self.batch = Batch()
-        self.load()
+        self.context = context or {}
+
+    def resize(self):
+        pass
 
     def draw(self):
         self.batch.draw()
