@@ -2,20 +2,21 @@ from enum import Enum
 from .errors import InvalidBeatDivisorError, InvalidBeatNumeratorError
 
 class Beat:
-    def __init__(self, numerator, divisor, n, bpm):
-        if numerator < 1:
+    def __init__(self, n, divisor, bpm):
+        if n < 1:
             raise InvalidBeatNumeratorError(numerator)
         if divisor < 1:
             raise InvalidBeatDivisorError(divisor)
-        self.numerator = numerator
-        self.divisor = divisor
         self.n = n
+        self.divisor = divisor
+        self.numerator = n % self.divisor
         self.bpm = bpm
+        self.time = self.numerator // self.divisor
 
     def to_time(self):
         time_per_beat = 60 / self.bpm if self.bpm is not 0 else 0
-        beat_time = ((self.numerator - 1) / self.divisor) * time_per_beat
-        return (time_per_beat * self.n) + beat_time
+        beat_time = ((self.n - 1) / self.divisor) * time_per_beat
+        return time_per_beat + beat_time
 
     def __repr__(self):
         return 'Beat {0.numerator}/{0.divisor}+{0.n}@{0.bpm} ({1}s)'.format(
