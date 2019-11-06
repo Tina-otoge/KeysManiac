@@ -8,4 +8,4 @@ stream_handler.setFormatter(logging.Formatter(
     style='{'
 ))
 logger.addHandler(stream_handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)

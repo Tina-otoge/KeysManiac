@@ -1,5 +1,39 @@
-from enum import Enum
 from .errors import InvalidBeatDivisorError, InvalidBeatNumeratorError
+
+class Judge:
+    TIMINGS = [
+        0.017,
+        0.03,
+        0.05
+    ]
+    WEIGHTS = [
+        1,
+        0.5,
+        0.2
+    ]
+    MISS = 0
+
+    @classmethod
+    def evaluate(cls, delta):
+        delta = abs(delta)
+        for result, timing in enumerate(cls.TIMINGS, start=cls.MISS + 1):
+            if delta <= timing:
+                return result
+        return cls.MISS
+
+    @classmethod
+    def is_out(cls, delta):
+        return delta > cls.TIMINGS[-1]
+
+    @classmethod
+    def weight(cls, judge):
+        try:
+            return cls.WEIGHTS[judge - (cls.MISS + 1)]
+        except IndexError:
+            return cls.MISS
+
+
+
 
 class Beat:
     def __init__(self, n, divisor, bpm):
@@ -24,9 +58,12 @@ class Beat:
         )
 
 class Note:
-    def __init__(self, beat, key):
+    def __init__(self, beat, key, *, key_sound=None, auto=False):
         self.beat = beat
         self.key = key
+        self.score = None
+        self.key_sound = key_sound
+        self.auto = auto
 
 class LongNote(Note):
     def __init__(self, beat_start, beat_end, key):
