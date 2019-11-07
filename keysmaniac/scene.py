@@ -2,7 +2,8 @@ from pyglet.graphics import Batch
 
 class Scene():
 
-    def __init__(self, context=None):
+    def __init__(self, game=None, context=None):
+        self.game = game
         self.batch = Batch()
         self.context = context or {}
 
