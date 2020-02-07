@@ -1,9 +1,11 @@
 from pyglet import clock, media
+from pyglet.sprite import Sprite
+from pyglet.text import Label
 from pyglet.window import key
 
 from ..log import logger
 from ..scene import Scene
-from ..resources import note_img, judgeline_img
+from ..resources import note_img, judgeline_img, judge_imgs, keypressed_img, scorebox_img
 from ..rules import NormalJudgement, BonusJudgement
 from ..display import Grid
 
@@ -16,66 +18,88 @@ class PlayScene(Scene):
     def note_delta(self, note):
         return self.time - note.timing_point.to_seconds()
 
-    def get_keys(self):
-        result = []
+    def get_key_lane(self, pressed):
         mapping = {key.S: 1, key.D: 2, key.K: 3, key.L: 4}
-        for bound, action in mapping.items():
-            if self.game.keys[bound]:
-                result.append(action)
-        return result
+        if pressed in mapping:
+            return mapping[pressed]
+        return None
 
-    def keys_hit(self, notes):
-        key_presses = self.get_keys()
-        if key_presses:
-            print('pressing:', key_presses)
-        for note in notes:
-            if note.key in key_presses:
-                key_presses.remove(note.key)
+    def keys_hit(self, lane):
+        for note in reversed(self.playing_notes):
+            if not note.is_hittable():
+                break
+            if note.key == lane:
                 self.hit(note)
+                break
 
     def hit(self, note):
         self.playing_notes.remove(note)
         note.hit_at = self.time
-        print('hit! judge:', note.judge)
-        print('score:', self.score)
+        self.last_hit = note
         self.score += note.judge.SCORE
         self.bonus_score += note.judge.BONUS_SCORE
+        self.score_label.text = self.build_score_string()
+        print(self.build_score_string())
         self.judged_notes.append(note)
+
+    def build_score_string(self):
+        return 'Score: ' + '{0:.1f}'.format(self.score).zfill(6)
 
     def load(self):
         self.score = 0
         self.bonus_score = 0
         self.time = 0.5
         self.scroll_speed = 30
-        self.simple_note = note_img
-        self.judgeline = judgeline_img
         self.package = self.context.get('song')
         self.playing_notes = self.package['chart'].copy()
+        self.playing_notes.sort(key=lambda x: x.get_time(), reverse=True)
         self.judged_notes = []
+        self.last_hit = None
+        self.lanes_state = [False] * 4
+        self.score_label = Label(self.build_score_string(), None, font_size=12)
         bgm = media.load(str(self.package['meta']['path'] / self.package['meta']['audio']))
-
         clock.schedule_interval(self.scroll, 1 / 120)
         bgm.play()
 
     def resize(self):
-        self.simple_note.width, self.simple_note.height = Grid(3, 1)
-        self.judgeline.width, self.judgeline.height = Grid(12, 1)
+        note_img.width, note_img.height = Grid(3, 1)
+        judgeline_img.width, judgeline_img.height = Grid(12, 1)
+        for judge in judge_imgs.values():
+            judge.width, judge.height = Grid(10, 2)
+        keypressed_img.width, keypressed_img.height = Grid(3, 1)
+        scorebox_img.width, scorebox_img.height = 200, 30
+        self.score_label.x, self.score_label.y = Grid(18, 4, 16, 6)
 
     def draw(self):
         Grid.draw_grid()
-        factor, _ = Grid.factor
+        factor = Grid.get_unit()
         columns_position = [3, 6, 9, 12]
-        self.judgeline.blit(*Grid(3, 1))
-        hittable_notes = []
+        judgeline_img.blit(*Grid(3, 1))
+        scorebox_img.blit(*Grid(18, 4))
+        self.score_label.draw()
+        if self.last_hit and self.last_hit.hit_at + 1 > self.time:
+            judge_imgs[self.last_hit.judge].blit(*Grid(4, 4))
+        for lane, state in enumerate(self.lanes_state):
+            if state:
+                keypressed_img.blit(*Grid((lane * 3) + 3, 1))
         for note in self.playing_notes:
             note.update(self.time)
-            self.simple_note.blit(*Grid(
+            note_img.blit(*Grid(
                 columns_position[note.key - 1], 1,
                 offset_y=(note.get_time() - self.time) * self.scroll_speed * factor
             ))
             if note.force_hit:
                 self.hit(note)
-            elif note.is_hittable():
-                hittable_notes.append(note)
-        hittable_notes.sort(key=lambda x: x.get_time(), reverse=True)
-        self.keys_hit(hittable_notes)
+
+    def on_key_press(self, symbol, modifiers):
+        lane = self.get_key_lane(symbol)
+        if not lane:
+            return
+        self.lanes_state[lane - 1] = True
+        self.keys_hit(lane)
+
+    def on_key_release(self, symbol, modifiers):
+        lane = self.get_key_lane(symbol)
+        if not lane:
+            return
+        self.lanes_state[lane - 1] = False

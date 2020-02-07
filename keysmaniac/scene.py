@@ -18,3 +18,9 @@ class Scene():
 
     def unload(self):
         pass
+
+    def on_key_press(self, symbol, modifiers):
+        pass
+
+    def on_key_release(self, symbol, modifiers):
+        pass

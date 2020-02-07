@@ -36,6 +36,11 @@ class Grid:
         cls.set_factor(width / cls.COLUMNS, height / cls.ROWS)
 
     @classmethod
+    def get_unit(cls):
+        x, _ = Grid(1, 1)
+        return x
+
+    @classmethod
     def draw_grid(cls):
         x, y = cls.factor
         for i in range(1, cls.COLUMNS):

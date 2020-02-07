@@ -11,11 +11,13 @@ class Game():
     def __init__(self):
         gl.glEnable(gl.GL_TEXTURE_2D)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.window = Window(width=640, height=360, resizable=True)
+        self.window.config.alpha_size = 8
+        gl.glEnable(gl.GL_BLEND)
         self.window.set_caption('KeysManiac (development build)')
-        self.keys = key.KeyStateHandler()
         Grid.set_factor_from_resolution(*self.window.get_size())
-        self.window.push_handlers(self, self.keys)
+        self.window.push_handlers(self)
         self.scene = None
 
     def load_scene(self, scene_class):
@@ -36,7 +38,19 @@ class Game():
 
     def on_resize(self, width, height):
         Grid.set_factor_from_resolution(width, height)
+        if not self.scene:
+            return
         self.scene.resize()
 
     def on_activate(self):
         self.on_draw()
+
+    def on_key_press(self, symbol, modifiers):
+        if not self.scene:
+            return
+        self.scene.on_key_press(symbol, modifiers)
+
+    def on_key_release(self, symbol, modifiers):
+        if not self.scene:
+            return
+        self.scene.on_key_release(symbol, modifiers)
