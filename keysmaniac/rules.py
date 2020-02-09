@@ -38,6 +38,7 @@ class Super(BonusJudgement):
 
 NORMAL_WINDOW = [Perfect, Nice, OK]
 BONUS_WINDOW = [Super]
+HAS_DELTA = [Nice, OK]
 JUDGES = [Miss, OK, Nice, Perfect, Super]
 BONUS = Super
 MISS = Miss

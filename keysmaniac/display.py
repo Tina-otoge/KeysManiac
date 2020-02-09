@@ -36,8 +36,8 @@ class Grid:
         cls.set_factor(width / cls.COLUMNS, height / cls.ROWS)
 
     @classmethod
-    def get_unit(cls):
-        x, _ = Grid(1, 1)
+    def get_unit(cls, factor=1):
+        x, _ = Grid(1 * factor, 1)
         return x
 
     @classmethod
