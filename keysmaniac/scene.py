@@ -7,16 +7,16 @@ class Scene():
         self.batch = Batch()
         self.context = context or {}
 
-    def resize(self):
+    def load(self):
+        pass
+
+    def unload(self):
         pass
 
     def draw(self):
         self.batch.draw()
 
-    def load(self):
-        pass
-
-    def unload(self):
+    def resize(self):
         pass
 
     def on_key_press(self, symbol, modifiers):
