@@ -4,7 +4,7 @@ from .rules import NORMAL_WINDOW, BONUS_WINDOW, BONUS, MISS
 class TimingPoint:
     def __init__(self, n, divisor, bpm):
         if n < 1:
-            raise InvalidBeatNumeratorError(numerator)
+            raise InvalidBeatNumeratorError(n)
         if divisor < 1:
             raise InvalidBeatDivisorError(divisor)
         self.n = n
@@ -14,7 +14,7 @@ class TimingPoint:
         self.time = self.numerator // self.divisor
 
     def to_seconds(self):
-        time_per_beat = 60 / self.bpm if self.bpm is not 0 else 0
+        time_per_beat = 60 / self.bpm if self.bpm != 0 else 0
         beat_time = ((self.n - 1) / self.divisor) * time_per_beat
         return time_per_beat + beat_time
 

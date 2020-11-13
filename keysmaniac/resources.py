@@ -13,3 +13,5 @@ fast_img = resource.image('judges/fast.png')
 slow_img = resource.image('judges/slow.png')
 
 scorebox_img = resource.image('score-box.png')
+
+title_img = resource.image('title.png')

@@ -4,6 +4,7 @@ import shutil
 
 from .log import logger
 
+
 class Config:
     def __init__(self, path='config.json'):
         self.path = path
@@ -35,10 +36,9 @@ class Config:
             backup_name = self.backup()
             logger.warning(
                 '{} was malformed, copy made at {},'
-                ' creating new config...'.format(self.path,backup_name
-            ))
+                ' creating new config...'.format(self.path, backup_name)
+            )
             return self.new_config()
-
 
     def save(self):
         with open(self.path, 'w') as f:

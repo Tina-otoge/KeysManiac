@@ -1,4 +1,12 @@
-from pyglet import gl, graphics
+from pyglet import gl, graphics, image
+
+image.Texture.default_min_filter = gl.GL_NEAREST
+image.Texture.default_mag_filter = gl.GL_NEAREST
+
+def percentize(s, to=1):
+    if not isinstance(s, str) or s[-1] != '%':
+        return False
+    return to * (float(s[0:-1]) / 100)
 
 class Grid:
 
@@ -12,10 +20,8 @@ class Grid:
         pass
 
     def __new__(self, column, row, offset_x=0, offset_y=0):
-        if isinstance(column, float):
-            column *= self.COLUMNS
-        if isinstance(row, float):
-            row *= self.ROWS
+        column = percentize(column, self.COLUMNS) or column
+        row = percentize(row, self.ROWS) or row
         if not (0 < column <= self.COLUMNS):
             raise IndexError('{} is not in the grid (0, {})'.format(
                 column, self.COLUMNS
