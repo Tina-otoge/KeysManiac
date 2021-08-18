@@ -1,0 +1,17 @@
+{
+	"content": [
+		{
+			"time": 300,
+			"divider": 4,
+			"notes": [
+				{"type": "simple", "keys": [1], "beat": 1 },
+				{"type": "simple", "keys": [1], "beat": 2 },
+				{"type": "simple", "keys": [2], "beat": 3 },
+				{"type": "simple", "keys": [2], "beat": 4 },
+				{"type": "simple", "keys": [3], "beat": 5 },
+				{"type": "simple", "keys": [3], "beat": 6 },
+				{"type": "simple", "keys": [4], "beat": 7 }
+			]
+		}
+	]
+}
