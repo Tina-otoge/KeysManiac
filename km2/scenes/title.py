@@ -33,10 +33,11 @@ class Title(Scene):
         self.bga.loop = True
         try:
             source = media.load('./resources/background.mp4')
-            self.bga.queue(source)
-            self.bga.play()
         except FileNotFoundError as e:
             km2.logger.warning(e)
+        else:
+            self.bga.queue(source)
+            self.bga.play()
 
     def close(self):
         self.bga.delete()
