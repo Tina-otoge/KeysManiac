@@ -30,7 +30,8 @@ class Game(SimplerWindow):
     def load_scene(self, scene: Union[Type[Scene], str], *args, **kwargs):
         if self.scene:
             km2.logger.debug(f'Closing scene {self.scene}')
-            del self.scene
+            self.scene.close()
+            self.scene = None
         if isinstance(scene, str):
             scene = Scene.by_name(scene)
         km2.logger.debug(f'Opening scene {scene}')

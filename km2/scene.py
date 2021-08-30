@@ -7,11 +7,15 @@ class Scene:
         self.batch = Batch()
 
     def __del__(self):
+        self.batch = None
         self.close()
 
     @classmethod
     def by_name(cls, name: str):
-        return {x.__name__: x for x in cls.__subclasses__()}[name]
+        try:
+            return {x.__name__: x for x in cls.__subclasses__()}[name]
+        except KeyError as e:
+            raise NameError(f'Scene {name} does not exist') from e
 
     def open(self):
         pass
